@@ -6,9 +6,7 @@
 
 #ifndef _esp32_midea_rs485_h
     #define _esp32_midea_rs485_h
-
-    #include "Serial.h"
-    
+   
     //Master command structure
     #define ESP32_MIDEA_RS485_PREAMBLE      0XAA
     #define ESP32_MIDEA_RS485_PROLOGUE      0X55
