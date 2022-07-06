@@ -2,86 +2,108 @@
     ESP32 library to control/monitor Midea air conditioner via XYE (RS485) bus
 */
 
-#pragma once
-
 #ifndef _esp32_midea_rs485_h
     #define _esp32_midea_rs485_h
-   
-    //Master command structure
-    #define ESP32_MIDEA_RS485_PREAMBLE      0XAA
-    #define ESP32_MIDEA_RS485_PROLOGUE      0X55
-    #define ESP32_MIDEA_RS485_MASTER_COMMAND_QERRY  0xC0
-    #define ESP32_MIDEA_RS485_MASTER_COMMAND_SET    0xC3
-    #define ESP32_MIDEA_RS485_MASTER_COMMAND_LOCK   0xCC
-    #define ESP32_MIDEA_RS485_MASTER_COMMAND_UNLOCK 0xCD
-    #define ESP32_MIDEA_RS485_FROM_MASTER           0x80
     
-    #define ESP32_MIDEA_RS485_OP_MODE_OFF          0x00
-    #define ESP32_MIDEA_RS485_OP_MODE_AUTO         0x80
-    #define ESP32_MIDEA_RS485_OP_MODE_FAN          0x81
-    #define ESP32_MIDEA_RS485_OP_MODE_DRY          0x82
-    #define ESP32_MIDEA_RS485_OP_MODE_HEAT         0x84
-    #define ESP32_MIDEA_RS485_OP_MODE_COOL         0x88
+    #include "Arduino.h"
     
-    #define ESP32_MIDEA_RS485_FAN_MODE_AUTO        0x80
-    #define ESP32_MIDEA_RS485_FAN_MODE_HIGH        0x01
-    #define ESP32_MIDEA_RS485_FAN_MODE_MEDIUM      0x02
-    #define ESP32_MIDEA_RS485_FAN_MODE_LOW         0x03
-    
-    #define ESP32_MIDEA_RS485_TEMP_SET_FAN_MODE    0xFF
-    
-    #define ESP32_MIDEA_RS485_MODE_FLAG_AUX_HEAT   0x02
-    #define ESP32_MIDEA_RS485_MODE_FLAG_NORM       0x00
-    #define ESP32_MIDEA_RS485_MODE_FLAG_ECO        0x01
-    #define ESP32_MIDEA_RS485_MODE_FLAG_SWING      0x04
-    #define ESP32_MIDEA_RS485_MODE_FLAG_VENT       0x88
-    
-    #define ESP32_MIDEA_RS485_TIMER_15MIN          0x01
-    #define ESP32_MIDEA_RS485_TIMER_30MIN          0x02
-    #define ESP32_MIDEA_RS485_TIMER_1HOUR          0x04
-    #define ESP32_MIDEA_RS485_TIMER_2HOUR          0x08
-    #define ESP32_MIDEA_RS485_TIMER_4HOUR          0x10
-    #define ESP32_MIDEA_RS485_TIMER_8HOUR          0x20
-    #define ESP32_MIDEA_RS485_TIMER_16HOUR         0x40
-    #define ESP32_MIDEA_RS485_TIMER_INVALID        0x80
-    
-    #define ESP32_MIDEA_RS485_COMMAND_UNKNOWN      0x00  
-    
-    //Slave Response
-    
-    #define ESP32_MIDEA_RS485_SLAVE_COMMAND_QERRY  0xC0
-    #define ESP32_MIDEA_RS485_SLAVE_COMMAND_SET    0xC3
-    #define ESP32_MIDEA_RS485_SLAVE_COMMAND_LOCK   0xCC
-    #define ESP32_MIDEA_RS485_SLAVE_COMMAND_UNLOCK 0xCD
-    
-    #define ESP32_MIDEA_RS485_TO_MASTER            0x80
-    
-    #define ESP32_MIDEA_RS485_RESPONSE_UNKNOWN     0x30  
-    
-    #define ESP32_MIDEA_RS485_CAPABILITIES_EXT_TEMP 0x80  
-    #define ESP32_MIDEA_RS485_CAPABILITIES_SWING    0x10
-    
-    #define ESP32_MIDEA_RS485_RESPONSE_UNKNOWN1    0xFF  
-    #define ESP32_MIDEA_RS485_RESPONSE_UNKNOWN2    0x01  
-    
-    #define ESP32_MIDEA_RS485_OP_FLAG_WATER_PUMP   0x04  
-    #define ESP32_MIDEA_RS485_OP_FLAG_WATER_LOCK   0x80  
-    
-    #define ESP32_MIDEA_RS485_RESPONSE_UNKNOWN3    0x00  
+    typedef enum{
+      MIDEA_AC_OPMODE_OFF,
+      MIDEA_AC_OPMODE_AUTO,
+      MIDEA_AC_OPMODE_COOL,
+      MIDEA_AC_OPMODE_DRY,
+      MIDEA_AC_OPMODE_HEAT,
+      MIDEA_AC_OPMODE_FAN,
+      MIDEA_AC_OPMODE_UNKOWN
+    }MideaACOpModeType;
 
+    typedef enum{
+      MIDEA_AC_FANMODE_AUTO,
+      MIDEA_AC_FANMODE_HIGH,
+      MIDEA_AC_FANMODE_MEDIUM,
+      MIDEA_AC_FANMODE_LOW,
+      MIDEA_AC_FANMODE_UNKNOWN
+    }MideaACFanModeType;
+    
+    typedef enum{
+      MIDEA_AC_ACTIVE=0,
+      MIDEA_AC_INACTIVE=1,
+    }MideaACOpFeatureStateType;
 
-    #ifdef __cplusplus
-    extern "C" {
-    #endif
+    typedef struct{
+      uint8_t Unknown1;
+      uint8_t Capabilities;
+      MideaACOpModeType OpMode;
+      MideaACFanModeType FanMode;
+      uint8_t SetTemp;
+      uint8_t T1Temp;
+      uint8_t T2ATemp;
+      uint8_t T2BTemp;
+      uint8_t T3Temp;
+      uint8_t Current;
+      uint8_t Unknown2;
+      uint32_t TimerStart;
+      uint32_t TimerStop;
+      uint8_t Unknown3;
+      uint8_t ModeFlags;
+      uint8_t OperatingFlags;
+      uint16_t ErrorFlags;
+      uint16_t ProtectFlags;
+      uint8_t CCMComErrorFlags;
+      uint8_t Unknown4;
+      uint8_t Unknown5;    
+      uint8_t ACNotResponding;    
+    }MideaACPropertiesType;
 
-    void esp32_midea_rs485_Init(Serial SerialPort, uint8_t ro_pin, uint8_t di_pin, uint8_t re_de_pin, );
-    uint8_t esp32_midea_rs485_SetMode(uint8_t mode);
-    uint8_t esp32_midea_rs485_SetTemp(uint8_t temp);
-    void esp32_midea_rs485_Cyclic();
-    uint8_t esp32_midea_rs485_GetMode(uint8_t *mode);
-    uint8_t esp32_midea_rs485_GetTemp(uint8_t *temp);
+    typedef struct{
+      MideaACOpModeType OpMode;
+      MideaACFanModeType FanMode;
+      uint8_t SetTemp;
+      MideaACOpFeatureStateType AuxHeat_Turbo;
+      MideaACOpFeatureStateType Echo_Sleep;
+      MideaACOpFeatureStateType Swing;
+      MideaACOpFeatureStateType Vent;
+      uint32_t TimerStart;
+      uint32_t TimerStop;
+    }MideaACCommandType;
 
-    #ifdef __cplusplus
-    } // extern C
-    #endif
+class ESP32_Midea_RS485Class {
+  public:
+    ESP32_Midea_RS485Class(HardwareSerial *hwSerial, uint8_t ro_pin, uint8_t di_pin, uint8_t re_de_pin, uint8_t master_id, uint8_t slave_id, uint8_t command_time, uint8_t response_timeout);
+    
+    virtual void begin(HardwareSerial *hwSerial, uint8_t ro_pin, uint8_t di_pin, uint8_t re_de_pin, uint8_t master_id, uint8_t slave_id, uint8_t command_time, uint8_t response_timeout);
+    uint8_t SetMode(MideaACOpModeType mode);
+    uint8_t SetFanMode(MideaACFanModeType fan_mode);
+    uint8_t SetTemp(uint8_t temp);
+    uint8_t SetAuxHeat_Turbo(MideaACOpFeatureStateType value);
+    uint8_t SetEcho_Sleep(MideaACOpFeatureStateType value);
+    uint8_t SetSwing(MideaACOpFeatureStateType value);
+    uint8_t SetVent(MideaACOpFeatureStateType value);
+    void Update();
+    void Lock();
+    void Unlock();
+    MideaACPropertiesType State;
+  private:
+    uint8_t ComControlPin;
+    HardwareSerial *SerialBus;
+    uint8_t datain_pin;
+    uint8_t dataout_pin;
+    uint8_t SentData[16];
+    uint8_t ReceivedData[32];
+    uint8_t SlaveId;
+    uint8_t MasterId;
+    uint8_t Master_Send_Time;
+    uint8_t Slave_Resp_Time;
+    MideaACCommandType DesiredState;
+    uint8_t UpdateNextCycle;
+  protected:
+    uint8_t CalculateCRC(uint8_t len);
+    void ClearResponseBuffer();
+    uint8_t ParseResponse();
+    uint8_t CalculateSetTime(uint32_t time);
+    uint32_t CalculateGetTime(uint8_t time);
+}; 
+
+extern ESP32_Midea_RS485Class ESP32_Midea_RS485;  
+
 #endif
