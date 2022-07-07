@@ -8,7 +8,7 @@
     #include "Arduino.h"
     
     typedef enum{
-      MIDEA_AC_OPMODE_OFF,
+      MIDEA_AC_OPMODE_OFF=0,
       MIDEA_AC_OPMODE_AUTO,
       MIDEA_AC_OPMODE_COOL,
       MIDEA_AC_OPMODE_DRY,
@@ -18,7 +18,7 @@
     }MideaACOpModeType;
 
     typedef enum{
-      MIDEA_AC_FANMODE_AUTO,
+      MIDEA_AC_FANMODE_AUTO=0,
       MIDEA_AC_FANMODE_HIGH,
       MIDEA_AC_FANMODE_MEDIUM,
       MIDEA_AC_FANMODE_LOW,
