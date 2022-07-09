@@ -261,6 +261,8 @@ void ESP32_Midea_RS485Class::Update()
       SentData[13] =  0xFF-SentData[1];
       SentData[15] =  PROLOGUE;
       SentData[14] = CalculateCRC(TRANSMIT_CRC);
+      
+      UpdateNextCycle=0;
     }  
     
     digitalWrite(ComControlPin, RS485_TX_PIN_VALUE);
