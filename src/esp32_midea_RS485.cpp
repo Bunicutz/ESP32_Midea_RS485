@@ -152,40 +152,47 @@ void ESP32_Midea_RS485Class::begin(HardwareSerial *hwSerial, uint8_t ro_pin, uin
 uint8_t ESP32_Midea_RS485Class::SetMode(MideaACOpModeType mode)
 {
    DesiredState.OpMode = mode; 
-   UpdateNextCycle = 1;     
+   UpdateNextCycle = 1;
+   return 1;     
 }
 
 uint8_t ESP32_Midea_RS485Class::SetFanMode(MideaACFanModeType mode)
 {
    DesiredState.FanMode = mode; 
    UpdateNextCycle = 1;     
+   return 1;     
 }
 
 uint8_t ESP32_Midea_RS485Class::SetTemp(uint8_t temp)
 {
    DesiredState.SetTemp = temp; 
    UpdateNextCycle = 1;     
+   return 1;     
 }
 
 uint8_t ESP32_Midea_RS485Class::SetAuxHeat_Turbo(MideaACOpFeatureStateType value)
 {
    DesiredState.AuxHeat_Turbo = value; 
    UpdateNextCycle = 1;     
+   return 1;     
 }
 uint8_t ESP32_Midea_RS485Class::SetEcho_Sleep(MideaACOpFeatureStateType value)
 {
    DesiredState.Echo_Sleep = value; 
    UpdateNextCycle = 1;     
+   return 1;     
 }
 uint8_t ESP32_Midea_RS485Class::SetSwing(MideaACOpFeatureStateType value)
 {
    DesiredState.Swing = value; 
    UpdateNextCycle = 1;     
+   return 1;     
 }
 uint8_t ESP32_Midea_RS485Class::SetVent(MideaACOpFeatureStateType value)
 {
    DesiredState.Vent = value; 
    UpdateNextCycle = 1;     
+   return 1;     
 }
 
 
@@ -505,31 +512,31 @@ uint32_t ESP32_Midea_RS485Class::CalculateGetTime(uint8_t time)
 {
    uint32_t timeValue=0;
    
-   if(0x40 == time&0x40)
+   if(0x40 == (time&0x40))
    {
       timeValue += 960;
    }
-   if(0x20 == time&0x20)
+   if(0x20 == (time&0x20))
    {
       timeValue += 480;
-ÿ  }
-   if(0x10 == time&0x10)
+   }
+   if(0x10 == (time&0x10))
    {
       timeValue += 240;
    }
-   if(0x08 == time&0x08)
+   if(0x08 == (time&0x08))
    {
       timeValue += 120;
    }
-   if(0x04 == time&0x04)
+   if(0x04 == (time&0x04))
    {
       timeValue += 60;
    }
-   if(0x02 == time&0x02)
+   if(0x02 == (time&0x02))
    {
       timeValue += 30;
    }
-   if(0x01 == time&0x01)
+   if(0x01 == (time&0x01))
    {
       timeValue += 15;
    }
