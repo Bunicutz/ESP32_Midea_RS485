@@ -244,7 +244,7 @@ void ESP32_Midea_RS485Class::Update()
       //set temp 
       SentData[8] =  DesiredState.SetTemp;
       //set mode flags
-      SentData[9] =   (DesiredState.AuxHeat_Turbo<<1)|(DesiredState.Echo_Sleep<<0)|(DesiredState.Swing<<4)|(DesiredState.Vent*0x88);
+      SentData[9] =   (DesiredState.AuxHeat_Turbo<<1)|(DesiredState.Echo_Sleep<<0)|(DesiredState.Swing<<3)|(DesiredState.Vent*0x88);
       //set timer start
       SentData[10] =  CalculateSetTime(State.TimerStart);      
       //set timer stop
@@ -512,7 +512,7 @@ uint32_t ESP32_Midea_RS485Class::CalculateGetTime(uint8_t time)
    if(0x20 == time&0x20)
    {
       timeValue += 480;
-   }
+ÿ  }
    if(0x10 == time&0x10)
    {
       timeValue += 240;
