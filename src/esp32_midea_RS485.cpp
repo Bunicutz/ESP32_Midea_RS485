@@ -281,7 +281,7 @@ void ESP32_Midea_RS485Class::Update()
         {
             ReceivedData[i]=SerialBus->read();
         }
-      if(0 == ParseResponse())
+      if(1 == ParseResponse())
       {
         State.ACNotResponding = 1;
       }
@@ -337,7 +337,7 @@ void ESP32_Midea_RS485Class::Lock()
         {
             ReceivedData[i]=SerialBus->read();
         }
-      if(0 == ParseResponse())
+      if(1 == ParseResponse())
       {
         State.ACNotResponding = 1;
       }
@@ -392,7 +392,7 @@ void ESP32_Midea_RS485Class::Unlock()
         {
             ReceivedData[i]=SerialBus->read();
         }
-      if(0 == ParseResponse())
+      if(1 == ParseResponse())
       {
         State.ACNotResponding = 1;
       }
