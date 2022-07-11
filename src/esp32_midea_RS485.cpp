@@ -428,16 +428,13 @@ uint8_t ESP32_Midea_RS485Class::ParseResponse()
         switch(ReceivedData[8]) 
         {
             case OP_MODE_OFF: State.OpMode = MIDEA_AC_OPMODE_OFF; break;
+            case OP_MODE_AUTO: State.OpMode = MIDEA_AC_OPMODE_AUTO; break;
             case OP_MODE_FAN: State.OpMode = MIDEA_AC_OPMODE_FAN; break;
             case OP_MODE_DRY: State.OpMode = MIDEA_AC_OPMODE_DRY; break;
             case OP_MODE_HEAT: State.OpMode = MIDEA_AC_OPMODE_HEAT; break;
             case OP_MODE_COOL: State.OpMode = MIDEA_AC_OPMODE_COOL; break;
             default: State.OpMode = MIDEA_AC_OPMODE_UNKOWN;
         }        
-        if(ReceivedData[8]&OP_MODE_AUTO)
-        {
-            State.FanMode = MIDEA_AC_OPMODE_AUTO;
-        }
 
         switch(ReceivedData[9]) 
         {
