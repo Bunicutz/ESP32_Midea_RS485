@@ -37,10 +37,10 @@
     #define OP_MODE_HEAT         0x84
     #define OP_MODE_COOL         0x88
     
-    #define FAN_MODE_AUTO        0x84
+    #define FAN_MODE_AUTO        0x80
     #define FAN_MODE_HIGH        0x01
     #define FAN_MODE_MEDIUM      0x02
-    #define FAN_MODE_LOW         0x03
+    #define FAN_MODE_LOW         0x04
     
     #define TEMP_SET_FAN_MODE    0xFF
     
@@ -428,21 +428,27 @@ uint8_t ESP32_Midea_RS485Class::ParseResponse()
         switch(ReceivedData[8]) 
         {
             case OP_MODE_OFF: State.OpMode = MIDEA_AC_OPMODE_OFF; break;
-            case OP_MODE_AUTO: State.OpMode = MIDEA_AC_OPMODE_AUTO; break;
             case OP_MODE_FAN: State.OpMode = MIDEA_AC_OPMODE_FAN; break;
             case OP_MODE_DRY: State.OpMode = MIDEA_AC_OPMODE_DRY; break;
             case OP_MODE_HEAT: State.OpMode = MIDEA_AC_OPMODE_HEAT; break;
             case OP_MODE_COOL: State.OpMode = MIDEA_AC_OPMODE_COOL; break;
             default: State.OpMode = MIDEA_AC_OPMODE_UNKOWN;
         }        
+        if(ReceivedData[8]&OP_MODE_AUTO)
+        {
+            State.FanMode = MIDEA_AC_OPMODE_AUTO;
+        }
 
         switch(ReceivedData[9]) 
         {
-            case FAN_MODE_AUTO: State.FanMode = MIDEA_AC_FANMODE_AUTO; break;
             case FAN_MODE_HIGH: State.FanMode = MIDEA_AC_FANMODE_HIGH; break;
             case FAN_MODE_MEDIUM: State.FanMode = MIDEA_AC_FANMODE_MEDIUM; break;
             case FAN_MODE_LOW: State.FanMode = MIDEA_AC_FANMODE_LOW; break;
             default: State.FanMode = MIDEA_AC_FANMODE_UNKNOWN;
+        }
+        if(ReceivedData[9]&FAN_MODE_AUTO)
+        {
+            State.FanMode = MIDEA_AC_FANMODE_AUTO;
         }
         State.SetTemp = ReceivedData[0x0A];
         State.T1Temp = (ReceivedData[0x0B]-0x30)/2;        
