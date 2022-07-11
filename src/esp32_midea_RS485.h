@@ -84,7 +84,7 @@ class ESP32_Midea_RS485Class {
     void Unlock();
     MideaACPropertiesType State;
     uint8_t SentData[16];
-    uint8_t ReceivedData[32];
+    uint8_t ReceivedData[40];
   private:
     uint8_t ComControlPin;
     HardwareSerial *SerialBus;
