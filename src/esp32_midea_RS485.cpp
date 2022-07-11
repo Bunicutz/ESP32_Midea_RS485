@@ -286,7 +286,7 @@ void ESP32_Midea_RS485Class::Update()
     }else if(SerialBus->available()>0)
         {
             SerialBus->readString();
-            State.ACNotResponding = 1;
+            State.ACNotResponding = 2;
         } 
 }
 
@@ -333,7 +333,7 @@ void ESP32_Midea_RS485Class::Lock()
     }else if(SerialBus->available()>0)
         {
             SerialBus->readString();
-            State.ACNotResponding = 1;
+            State.ACNotResponding = 2;
         } 
 }
 void ESP32_Midea_RS485Class::Unlock()
@@ -379,7 +379,7 @@ void ESP32_Midea_RS485Class::Unlock()
     }else if(SerialBus->available()>0)
         {
             SerialBus->readString();
-            State.ACNotResponding = 1;
+            State.ACNotResponding = 2;
         } 
 }
 
