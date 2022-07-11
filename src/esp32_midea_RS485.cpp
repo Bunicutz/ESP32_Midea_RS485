@@ -273,7 +273,9 @@ void ESP32_Midea_RS485Class::Update()
     
     State.ACNotResponding = 0;
     
-    if(SerialBus->available()==32)
+    resp = SerialBus->available();
+
+    if(resp==32)
     {
         for(i=0;i<32;i++)
         {
@@ -283,9 +285,16 @@ void ESP32_Midea_RS485Class::Update()
       {
         State.ACNotResponding = 1;
       }
-    }else if(SerialBus->available()>0)
+    }else if(resp>0)
         {
-            SerialBus->readString();
+            for(i=0;i<resp;i++)
+            {
+                ReceivedData[i]=SerialBus->read();
+            }
+            for(i=resp;i<40;i++)
+            {
+                ReceivedData[i]=0;
+            }
             State.ACNotResponding = 2;
         } 
 }
@@ -320,7 +329,9 @@ void ESP32_Midea_RS485Class::Lock()
     
     State.ACNotResponding = 0;
     
-    if(SerialBus->available()==32)
+    resp = SerialBus->available();
+
+    if(resp==32)
     {
         for(i=0;i<32;i++)
         {
@@ -330,9 +341,16 @@ void ESP32_Midea_RS485Class::Lock()
       {
         State.ACNotResponding = 1;
       }
-    }else if(SerialBus->available()>0)
+    }else if(resp>0)
         {
-            SerialBus->readString();
+            for(i=0;i<resp;i++)
+            {
+                ReceivedData[i]=SerialBus->read();
+            }
+            for(i=resp;i<40;i++)
+            {
+                ReceivedData[i]=0;
+            }
             State.ACNotResponding = 2;
         } 
 }
@@ -366,7 +384,9 @@ void ESP32_Midea_RS485Class::Unlock()
     
     State.ACNotResponding = 0;
     
-    if(SerialBus->available()==32)
+    resp = SerialBus->available();
+
+    if(resp==32)
     {
         for(i=0;i<32;i++)
         {
@@ -376,11 +396,19 @@ void ESP32_Midea_RS485Class::Unlock()
       {
         State.ACNotResponding = 1;
       }
-    }else if(SerialBus->available()>0)
+    }else if(resp>0)
         {
-            ReceivedData = SerialBus->readString();
+            for(i=0;i<resp;i++)
+            {
+                ReceivedData[i]=SerialBus->read();
+            }
+            for(i=resp;i<40;i++)
+            {
+                ReceivedData[i]=0;
+            }
             State.ACNotResponding = 2;
         } 
+    
 }
 
 uint8_t ESP32_Midea_RS485Class::CalculateCRC(uint8_t len)
