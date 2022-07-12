@@ -52,17 +52,17 @@ https://codeberg.org/xye/xye
     State
       Unknown1 - see https://codeberg.org/xye/xye
       Capabilities - see https://codeberg.org/xye/xye
-      OpMode - see https://codeberg.org/xye/xye
-      FanMode - see https://codeberg.org/xye/xye
-      SetTemp - see https://codeberg.org/xye/xye
-      T1Temp - see https://codeberg.org/xye/xye
-      T2ATemp - see https://codeberg.org/xye/xye
-      T2BTemp - see https://codeberg.org/xye/xye
-      T3Temp - see https://codeberg.org/xye/xye
+      OpMode - operation mode
+      FanMode - fan mode
+      SetTemp - set temp in C
+      T1Temp - Temp in C
+      T2ATemp - Temp in C
+      T2BTemp - Temp in C
+      T3Temp - Temp in C
       Current - see https://codeberg.org/xye/xye
       Unknown2 - see https://codeberg.org/xye/xye
-      TimerStart - see https://codeberg.org/xye/xye
-      TimerStop - see https://codeberg.org/xye/xye
+      TimerStart - time to start in minutes
+      TimerStop - time to stop in minutes
       Unknown3 - see https://codeberg.org/xye/xye
       ModeFlags - see https://codeberg.org/xye/xye
       OperatingFlags - see https://codeberg.org/xye/xye
