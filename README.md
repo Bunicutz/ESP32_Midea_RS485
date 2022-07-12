@@ -24,7 +24,7 @@ https://codeberg.org/xye/xye
        re_de_pin - RE/DE pin
        master_id - id of the master
        slave_id - id of the slave
-       command_time - time in ms needed for command: ~40ms ()
+       command_time - time in ms needed for command: ~40ms (you can play with it untill no message is lost anymore)
        response_timeout - time after which the response is read: ~100ms
        
     SetMode
