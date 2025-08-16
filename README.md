@@ -2,9 +2,9 @@
 
 # Home Assistant Integration:
 
-1. copy the file GitHub\ESP32_Midea_RS485\example\esp32_midea_RS485_HA_sample\bunicutz_AC.h in HA in the folder /config/esphome/
+1. copy the content of the folder GitHub\ESP32_Midea_RS485\example\esp32_midea_RS485_HA_sample\external_cmponents\Bunicutz_AC in HA in the folder /config/esphome/external_components/Bunicutz_AC
 2. initialize your esp32 device following normal esphome plugin procedure (if you do not have esphome plugin installed then install it)
-3. copy the configuration of the sensor from the template GitHub\ESP32_Midea_RS485\example\esp32_midea_RS485_HA_sample\aer-conditionat.yaml
+3. copy the configuration of the sensor from the template GitHub\ESP32_Midea_RS485\example\esp32_midea_RS485_HA_sample\aer-conditionat.yaml and make sure you replace the <your data> with your data.
 
 # HW connection:
 Master configuration from:

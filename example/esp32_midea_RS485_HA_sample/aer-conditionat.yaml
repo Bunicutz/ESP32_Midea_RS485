@@ -1,102 +1,113 @@
-#........................................................
-
-  includes: 
-    - bunicutz_AC.h
+esphome:
+  name: <your data>
   
   libraries:
     - "https://github.com/Bunicutz/ESP32_Midea_RS485.git"
 
-#..............................................
+esp32:
+  board: <your data>
+  framework:
+    type: arduino
 
-sensor:
-- platform: custom
-  id: my_AC
-  lambda: |-
-    auto my_ACSensors = new BunicutzACSensor(id(my_ac_mode),id(my_ac_fan_mode),id(ac_set_temp),id(ac_aux_heat),id(ac_echo_sleep),id(ac_vent),id(ac_swing),id(ac_lock));
-    App.register_component(my_ACSensors);
-    return {my_ACSensors->ACT1Temp,
-            my_ACSensors->ACT2ATemp,
-            my_ACSensors->ACT2BTemp,
-            my_ACSensors->ACT3Temp,
-            my_ACSensors->ACNotResponding
-    };
-  sensors:
-  - name: "AC In Air Temp"    
-    unit_of_measurement: "°C"
-    accuracy_decimals: 0
+# Enable logging
+logger:
 
-  - name: "AC Coil A Temp"    
-    unit_of_measurement: "°C"
-    accuracy_decimals: 0
+ota:
+  - platform: esphome
+    password: "xxxxxx"
 
-  - name: "AC Coil B Temp"    
-    unit_of_measurement: "°C"
-    accuracy_decimals: 0
+api:
 
-  - name: "AC Outdoor Temp"    
-    unit_of_measurement: "°C"
-    accuracy_decimals: 0
+wifi:
+  networks:
+  - ssid: <your data>
+  - password: <your data>
 
-  - name: "AC Com State"    
-    unit_of_measurement: "bool"
-    accuracy_decimals: 0
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "<your data>"
+    password: "<your data>"
 
-select:
-  - platform: template
-    name: "AC Mode"
-    optimistic: true
-    id: my_ac_mode
-    options:
-      - "Off"
-      - "Auto"
-      - "Cool"
-      - "Dry"
-      - "Heat"
-      - "Fan"
-      - "Unknown"
+  manual_ip:
+    # Set this to the IP of the ESP
+    static_ip: <your data>
+   # Set this to the IP address of the router. Often ends with .1
+    gateway: <your data>
+    # The subnet of the network. 255.255.255.0 works for most home networks.
+    subnet: <your data>
 
-  - platform: template
-    name: "AC Fan Mode"
-    optimistic: true
-    id: my_ac_fan_mode
-    options:
-      - "Auto"
-      - "High"
-      - "Medium"
-      - "Low"
-      - "Unknown"
+captive_portal:
 
-number:
-  - platform: template
-    name: "AC Set Temp"
-    id: ac_set_temp
-    optimistic: true
-    min_value: 18
-    max_value: 32
-    step: 1
+mqtt:
+  broker: <your data>
+  port: <your data>
+  username: <your data>
+  password: <your data>
+  keepalive: 1min
+  discovery: true
+  discovery_retain: true
+
+external_components:
+  - source: 
+      type: local
+      path: external_components
+
+Bunicutz_AC:
+  id: "WholeHouse_AC"
+  Unknown1:
+    name: "AC Unknown1"
+  Capabilities:
+    name: "AC Capabilities"
+  ACT1Temp:
+    name: "AC In Air Temp"
+  ACT2ATemp:
+    name: "AC Coil A Temp"
+  ACT2BTemp:
+    name: "AC Coil B Temp"
+  ACT3Temp:
+    name: "AC Outdoor Temp"
+  Current:
+    name: "AC Current"
+  Unknown2:
+    name: "AC Unknown2"
+  Unknown3:
+    name: "AC Unknown3"
+  OperatingFlags:
+    name: "AC Operating Flags"
+  ErrorFlags:
+    name: "AC Error Flags"
+  ProtectFlags:
+    name: "AC Protect Flags"
+  CCMComErrorFlags:
+    name: "AC CCM Com Error Flags"
+  Unknown4:
+    name: "AC Unknown4"
+  Unknown5:
+    name: "AC Unknown5"
+  ACNotResponding:
+    name: "AC Com State"
 
 switch:
-  - platform: template
-    name: "Auxiliary Heat"
-    id: ac_aux_heat
-    optimistic: true
+  - platform: Bunicutz_AC
+    aux_heat:
+      name: "Auxiliary Heat"
+    echo_sleep:
+      name: "Echo/Sleep"
+    swing:
+      name: "Swing"
+    vent:
+      name: "Vent"
+    lock:
+      name: "Lock"
 
-  - platform: template
-    name: "Echo/Sleep"
-    id: ac_echo_sleep
-    optimistic: true
+select:
+  - platform: Bunicutz_AC
+    SetMode:
+      name: "AC Mode"
+    SetFanMode:
+      name: "AC Fan Mode"
 
-  - platform: template
-    name: "Swing"
-    id: ac_swing
-    optimistic: true
-
-  - platform: template
-    name: "Vent"
-    id: ac_vent
-    optimistic: true
-
-  - platform: template
-    name: "Lock"
-    id: ac_lock
-    optimistic: true
+number:
+  - platform: Bunicutz_AC
+    SetTemp:
+      name: "AC Set Temp"

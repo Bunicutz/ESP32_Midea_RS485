@@ -1,10 +1,11 @@
-#include "esphome.h"
+#include "esphome/core/log.h"
+#include "Bunicutz_AC.h"
 #include <esp32_midea_RS485.h>
 
 #define DI_PIN 16
 #define RO_PIN 17 
-#define DE_PIN 4
-#define RE_PIN 4
+#define DE_PIN 0
+#define RE_PIN 0
 
 #define SERIAL_COM_BUS &Serial2
 #define SERIAL_COM_CONTROL_PIN DE_PIN
@@ -13,94 +14,46 @@
 #define SERIAL_COM_MASTER_SEND_TIME 40
 #define SERIAL_COM_SLAVE_TIMEOUT_TIME 100
 
-float DesiredTemp=18;
+namespace esphome {
+namespace Bunicutz_AC {
 
-class BunicutzACSensor : public PollingComponent, public Sensor {
- public:
-  // constructor
-  
+static const char *TAG = "Bunicutz_AC.component";
 
-  Sensor *ACT1Temp = new Sensor();
-  Sensor *ACT2ATemp = new Sensor();
-  Sensor *ACT2BTemp = new Sensor();
-  Sensor *ACT3Temp = new Sensor();
-  Sensor *ACNotResponding = new Sensor();
-  std::string SetMode = "Unknown";
-  std::string SetFanMode = "Unknown";
-  uint8_t SetTemp = 18;
-  bool aux_heat = 0;
-  bool echo_sleep = 0;
-  bool vent = 0;
-  bool swing = 0;
-  bool lock = 0;
+void BunicutzAC::setup() {
 
-  esphome::template_::TemplateSelect *_SetMode;
-  esphome::template_::TemplateSelect *_SetFanMode;
-  esphome::template_::TemplateNumber *_SetTemp;
-  esphome::template_::TemplateSwitch *_aux_heat;
-  esphome::template_::TemplateSwitch *_echo_sleep;
-  esphome::template_::TemplateSwitch *_vent;
-  esphome::template_::TemplateSwitch *_swing;
-  esphome::template_::TemplateSwitch *_lock;
+    ESP32_Midea_RS485.begin(SERIAL_COM_BUS,RO_PIN,DI_PIN,SERIAL_COM_CONTROL_PIN,SERIAL_COM_MASTER_ID,SERIAL_COM_SLAVE_ID,SERIAL_COM_MASTER_SEND_TIME,SERIAL_COM_SLAVE_TIMEOUT_TIME);
 
-  uint8_t update_command=0;
-  uint8_t update_internal=0;
-
-  BunicutzACSensor(\
-  esphome::template_::TemplateSelect *&_SetMode_in,\
-  esphome::template_::TemplateSelect *&_SetFanMode_in,\
-  esphome::template_::TemplateNumber *&_SetTemp_in, \
-  esphome::template_::TemplateSwitch *&_aux_heat_in, \
-  esphome::template_::TemplateSwitch *&_echo_sleep_in, \
-  esphome::template_::TemplateSwitch *&_vent_in, \
-  esphome::template_::TemplateSwitch *&_swing_in, \
-  esphome::template_::TemplateSwitch *&_lock_in \
-  ) : PollingComponent(10000)  {
-  _SetMode=_SetMode_in;
-  _SetFanMode = _SetFanMode_in;
-  _SetTemp=_SetTemp_in;
-  _aux_heat = _aux_heat_in;
-  _echo_sleep = _echo_sleep_in;
-  _vent = _vent_in;
-  _swing = _swing_in;
-  _lock = _lock_in;
-
-    _SetMode->add_on_state_callback([this](std::string value, size_t size)
+    SetMode_->add_on_state_callback([this](std::string value, size_t size)
                                         { if((1 != update_internal)&&(value != SetMode)){update_command =1;} });
-    _SetFanMode->add_on_state_callback([this](std::string value, size_t size)
+    SetFanMode_->add_on_state_callback([this](std::string value, size_t size)
                                         { if((1 != update_internal)&&(value != SetFanMode)){update_command =1;}});
-    _SetTemp->add_on_state_callback([this](float value)
+    SetTemp_->add_on_state_callback([this](float value)
                                         { if((1 != update_internal)&&(value != SetTemp)){update_command =1;}});
-    _aux_heat->add_on_state_callback([this](bool value)
+    aux_heat_->add_on_state_callback([this](bool value)
                                         { if((1 != update_internal)&&(value != aux_heat)){update_command =1;}});
-    _echo_sleep->add_on_state_callback([this](bool value)
+    echo_sleep_->add_on_state_callback([this](bool value)
                                         { if((1 != update_internal)&&(value != echo_sleep)){update_command =1;}});
-    _swing->add_on_state_callback([this](bool value)
+    swing_->add_on_state_callback([this](bool value)
                                         { if((1 != update_internal)&&(value != swing)){update_command =1;}});
-    _vent->add_on_state_callback([this](bool value)
+    vent_->add_on_state_callback([this](bool value)
                                         { if((1 != update_internal)&&(value != vent)){update_command =1;}});
-    _lock->add_on_state_callback([this](bool value)
+    lock_->add_on_state_callback([this](bool value)
                                         { if(value == 1){ESP32_Midea_RS485.Lock();}else{ESP32_Midea_RS485.Unlock();}});
 
-  }
+}
 
-  float get_setup_priority() const override { return esphome::setup_priority::AFTER_WIFI; }
+void BunicutzAC::loop() {
 
-  void setup() override {
-    
-  ESP32_Midea_RS485.begin(SERIAL_COM_BUS,RO_PIN,DI_PIN,SERIAL_COM_CONTROL_PIN,SERIAL_COM_MASTER_ID,SERIAL_COM_SLAVE_ID,SERIAL_COM_MASTER_SEND_TIME,SERIAL_COM_SLAVE_TIMEOUT_TIME);
-  
-  
-  
-  }
-  void update() override {
+}
+
+void BunicutzAC::update() {
 
   float temp;
   uint8_t index;
 
   if(1==update_command)
   {
-    SetMode = _SetMode->state.c_str();
+    SetMode = SetMode_->state.c_str();
   
     if(SetMode == "Auto")
     {
@@ -127,7 +80,7 @@ class BunicutzACSensor : public PollingComponent, public Sensor {
         ESP32_Midea_RS485.SetMode(MIDEA_AC_OPMODE_FAN);
     }
     
-    SetFanMode = _SetFanMode->state.c_str();
+    SetFanMode = SetFanMode_->state.c_str();
 
     if(SetFanMode=="Auto")
     {
@@ -146,10 +99,10 @@ class BunicutzACSensor : public PollingComponent, public Sensor {
         ESP32_Midea_RS485.SetFanMode(MIDEA_AC_FANMODE_LOW);
     }
     
-    SetTemp = (_SetTemp->state)/1;
+    SetTemp = (SetTemp_->state)/1;
     ESP32_Midea_RS485.SetTemp(SetTemp);
 
-    aux_heat = _aux_heat->state;
+    aux_heat = aux_heat_->state;
     if(!aux_heat)
     {
         ESP32_Midea_RS485.SetAuxHeat_Turbo(MIDEA_AC_ACTIVE);
@@ -158,7 +111,7 @@ class BunicutzACSensor : public PollingComponent, public Sensor {
             ESP32_Midea_RS485.SetAuxHeat_Turbo(MIDEA_AC_INACTIVE);
         }
     
-    echo_sleep = _echo_sleep->state;
+    echo_sleep = echo_sleep_->state;
     if(!echo_sleep)
     {
         ESP32_Midea_RS485.SetEcho_Sleep(MIDEA_AC_ACTIVE);
@@ -167,7 +120,7 @@ class BunicutzACSensor : public PollingComponent, public Sensor {
             ESP32_Midea_RS485.SetEcho_Sleep(MIDEA_AC_INACTIVE);
         }
 
-    vent = _vent->state;
+    vent = vent_->state;
     if(!vent)
     {
         ESP32_Midea_RS485.SetVent(MIDEA_AC_ACTIVE);
@@ -176,7 +129,7 @@ class BunicutzACSensor : public PollingComponent, public Sensor {
             ESP32_Midea_RS485.SetVent(MIDEA_AC_INACTIVE);
         }
 
-    swing = _swing->state;
+    swing = swing_->state;
     if(!swing)
     {
         ESP32_Midea_RS485.SetSwing(MIDEA_AC_ACTIVE);
@@ -260,66 +213,84 @@ class BunicutzACSensor : public PollingComponent, public Sensor {
     
     if(ESP32_Midea_RS485.State.OpMode == MIDEA_AC_OPMODE_AUTO)
     {
-       _SetMode->publish_state("Auto");
+       SetMode_->publish_state("Auto");
     }else if(ESP32_Midea_RS485.State.OpMode == MIDEA_AC_OPMODE_OFF)
     {
-        _SetMode->publish_state("Off");
+        SetMode_->publish_state("Off");
     }else if(ESP32_Midea_RS485.State.OpMode ==MIDEA_AC_OPMODE_COOL)
     {
-        _SetMode->publish_state("Cool");
+        SetMode_->publish_state("Cool");
     }else if(ESP32_Midea_RS485.State.OpMode == MIDEA_AC_OPMODE_HEAT)
     {
-        _SetMode->publish_state("Heat");
+        SetMode_->publish_state("Heat");
     }else if(ESP32_Midea_RS485.State.OpMode == MIDEA_AC_OPMODE_DRY)
     {
-        _SetMode->publish_state("Dry");
+        SetMode_->publish_state("Dry");
     }else if(ESP32_Midea_RS485.State.OpMode == MIDEA_AC_OPMODE_FAN)
     {
-        _SetMode->publish_state("Fan");
+        SetMode_->publish_state("Fan");
     }else
     {
-        _SetMode->publish_state("Unknown");
+        SetMode_->publish_state("Unknown");
     }
 
     if(ESP32_Midea_RS485.State.FanMode == MIDEA_AC_FANMODE_AUTO)
     {
-       _SetFanMode->publish_state("Auto");
+       SetFanMode_->publish_state("Auto");
     }else if(ESP32_Midea_RS485.State.FanMode == MIDEA_AC_FANMODE_HIGH)
     {
-        _SetFanMode->publish_state("High");
+        SetFanMode_->publish_state("High");
     }else if(ESP32_Midea_RS485.State.FanMode ==MIDEA_AC_FANMODE_MEDIUM)
     {
-        _SetFanMode->publish_state("Medium");
+        SetFanMode_->publish_state("Medium");
     }else if(ESP32_Midea_RS485.State.FanMode == MIDEA_AC_FANMODE_LOW)
     {
-        _SetFanMode->publish_state("Low");
+        SetFanMode_->publish_state("Low");
     }else
     {
-        _SetFanMode->publish_state("Unknown");
+        SetFanMode_->publish_state("Unknown");
     }
     
     if(ESP32_Midea_RS485.State.SetTemp>0)
     {
         temp = ESP32_Midea_RS485.State.SetTemp * 1.0;
-        _SetTemp->publish_state(temp);
+        SetTemp_->publish_state(temp);
     }else
         {
-            _SetTemp->publish_state(18);
+            SetTemp_->publish_state(18);
         }
     
-    _aux_heat->publish_state((ESP32_Midea_RS485.State.OperatingFlags&0x02)>0);
-    _echo_sleep->publish_state((ESP32_Midea_RS485.State.OperatingFlags&0x01)>0);
-    _vent->publish_state((ESP32_Midea_RS485.State.OperatingFlags&0x88)>0);
-    _swing->publish_state((ESP32_Midea_RS485.State.OperatingFlags&0x04)>0);
+    aux_heat_->publish_state((ESP32_Midea_RS485.State.ModeFlags&0x02)>0);
+    echo_sleep_->publish_state((ESP32_Midea_RS485.State.ModeFlags&0x01)>0);
+    vent_->publish_state((ESP32_Midea_RS485.State.ModeFlags&0x88)>0);
+    swing_->publish_state((ESP32_Midea_RS485.State.ModeFlags&0x04)>0);
 
     update_internal = 0;
   }
 
-  ACT1Temp->publish_state(ESP32_Midea_RS485.State.T1Temp);
-  ACT2ATemp->publish_state(ESP32_Midea_RS485.State.T2ATemp);
-  ACT2BTemp->publish_state(ESP32_Midea_RS485.State.T2BTemp);
-  ACT3Temp->publish_state(ESP32_Midea_RS485.State.T3Temp);
-  ACNotResponding->publish_state(ESP32_Midea_RS485.State.ACNotResponding);
+  Unknown1_->publish_state(ESP32_Midea_RS485.State.Unknown1);
+  Capabilities_->publish_state(ESP32_Midea_RS485.State.Capabilities);
+  ACT1Temp_->publish_state(ESP32_Midea_RS485.State.T1Temp);
+  ACT2ATemp_->publish_state(ESP32_Midea_RS485.State.T2ATemp);
+  ACT2BTemp_->publish_state(ESP32_Midea_RS485.State.T2BTemp);
+  ACT3Temp_->publish_state(ESP32_Midea_RS485.State.T3Temp);
+  Current_->publish_state(ESP32_Midea_RS485.State.Current);
+  Unknown2_->publish_state(ESP32_Midea_RS485.State.Unknown2);
+  Unknown3_->publish_state(ESP32_Midea_RS485.State.Unknown3);
+  OperatingFlags_->publish_state(ESP32_Midea_RS485.State.OperatingFlags);
+  ErrorFlags_->publish_state(ESP32_Midea_RS485.State.ErrorFlags);
+  ProtectFlags_->publish_state(ESP32_Midea_RS485.State.ProtectFlags);
+  CCMComErrorFlags_->publish_state(ESP32_Midea_RS485.State.CCMComErrorFlags);
+  Unknown4_->publish_state(ESP32_Midea_RS485.State.Unknown4);
+  Unknown5_->publish_state(ESP32_Midea_RS485.State.Unknown5);
+  ACNotResponding_->publish_state(ESP32_Midea_RS485.State.ACNotResponding);
 
-  }
-};
+}
+
+void BunicutzAC::dump_config(){
+    ESP_LOGCONFIG(TAG, "Bunicutz_AC component");
+}
+
+
+}  // namespace Bunicutz_AC
+}  // namespace esphome
